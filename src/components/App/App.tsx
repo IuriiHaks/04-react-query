@@ -16,9 +16,14 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const { data, isLoading, isError } = useQuery<MoviesResponse>({
+  const { data, isLoading, isError } = useQuery<
+    MoviesResponse,
+    Error,
+    MoviesResponse
+  >({
     queryKey: ["movies", query, page],
     queryFn: () => fetchMovies(query, page),
+
     enabled: query !== "",
     placeholderData: keepPreviousData,
   });
@@ -31,6 +36,9 @@ export default function App() {
     setQuery(searchQuery);
     setPage(1);
   };
+
+  console.log("DEBUG query:", query, "page:", page);
+  console.log("DEBUG data:", data);
 
   return (
     <div>
@@ -45,7 +53,7 @@ export default function App() {
       )}
 
       {data &&
-        (data as MoviesResponse).results.length === 0 &&
+        data.results.length === 0 &&
         toast.error("No movies found for your request.")}
 
       {data && data.total_pages > 1 && (

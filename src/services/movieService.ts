@@ -5,7 +5,7 @@ const API_URL = "https://api.themoviedb.org/3/search/movie";
 
 export async function fetchMovies(
   query: string,
-  page: number
+  page: number = 1
 ): Promise<MoviesResponse> {
   const response = await axios.get<{
     results: MoviesResponse;
@@ -15,5 +15,8 @@ export async function fetchMovies(
       Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
     },
   });
+
+  console.log("DEBUG fetchMovies response:", response.data);
+
   return response.data.results;
 }
