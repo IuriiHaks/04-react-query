@@ -23,6 +23,7 @@ export default function App() {
   >({
     queryKey: ["movies", query, page],
     queryFn: () => fetchMovies(query, page),
+    // enabled: Boolean(query),
     enabled: query !== "",
     placeholderData: keepPreviousData,
   });
@@ -36,7 +37,6 @@ export default function App() {
     setPage(1);
   };
 
-
   return (
     <div>
       <Toaster />
@@ -45,11 +45,12 @@ export default function App() {
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
 
-      {data && data.results.length > 0 && (
+      {data && data.results && data.results.length > 0 && (
         <MovieGrid movies={data.results} onSelect={setSelectedMovie} />
       )}
 
       {data &&
+        data.results &&
         data.results.length === 0 &&
         toast.error("No movies found for your request.")}
 
