@@ -16,7 +16,5 @@ export async function fetchMovies(
     },
   });
 
-  console.log("DEBUG fetchMovies response:", response.data);
-
   return response.data.results;
 }

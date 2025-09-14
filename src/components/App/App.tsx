@@ -23,7 +23,6 @@ export default function App() {
   >({
     queryKey: ["movies", query, page],
     queryFn: () => fetchMovies(query, page),
-
     enabled: query !== "",
     placeholderData: keepPreviousData,
   });
@@ -37,8 +36,6 @@ export default function App() {
     setPage(1);
   };
 
-  console.log("DEBUG query:", query, "page:", page);
-  console.log("DEBUG data:", data);
 
   return (
     <div>
