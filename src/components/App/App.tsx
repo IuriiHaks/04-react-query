@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
@@ -7,7 +7,7 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
-import type { Movie, MoviesResponse } from "../../types/movie";
+import type { Movie } from "../../types/movie";
 import { fetchMovies } from "../../services/movieService";
 import css from "../App/App.module.css";
 
@@ -17,13 +17,16 @@ export default function App() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   const { data, isLoading, isError } = useQuery<
-    MoviesResponse,
-    Error,
-    MoviesResponse
+    {
+      page: number;
+      results: Movie[];
+      total_pages: number;
+      total_results: number;
+    },
+    Error
   >({
     queryKey: ["movies", query, page],
     queryFn: () => fetchMovies(query, page),
-    // enabled: Boolean(query),
     enabled: query !== "",
     placeholderData: keepPreviousData,
   });
@@ -37,6 +40,12 @@ export default function App() {
     setPage(1);
   };
 
+  useEffect(() => {
+    if (data && data.results.length === 0) {
+      toast.error("No movies found for your request.");
+    }
+  }, [data]);
+
   return (
     <div>
       <Toaster />
@@ -48,11 +57,6 @@ export default function App() {
       {data && data.results && data.results.length > 0 && (
         <MovieGrid movies={data.results} onSelect={setSelectedMovie} />
       )}
-
-      {data &&
-        data.results &&
-        data.results.length === 0 &&
-        toast.error("No movies found for your request.")}
 
       {data && data.total_pages > 1 && (
         <ReactPaginate
